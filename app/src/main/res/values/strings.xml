@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SMS-Identify</string>
+    <string name="description">用于保持在后台运行</string>
 </resources>
