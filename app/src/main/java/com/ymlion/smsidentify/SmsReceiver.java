@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 
 public class SmsReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "SmsReceiver";
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
