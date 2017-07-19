@@ -22,10 +22,10 @@ public class BootService extends AccessibilityService {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.READ_SMS) == PackageManager.PERMISSION_DENIED) {
                 Toast.makeText(this, "请授予读取短信的权限", Toast.LENGTH_LONG).show();
-                Intent intent1 = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                         .setData(Uri.parse("package:" + getPackageName()))
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent1);
+                startActivity(intent);
             }
         }
     }
