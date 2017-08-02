@@ -45,7 +45,7 @@ public class SmsReceiver extends BroadcastReceiver {
     }
 
     public static String findCode(String msg) {
-        if (msg.length() > 3 && msg.contains("验证码")) {
+        if (msg.length() > 3 && msg.contains("验证码") || msg.contains("verification code")) {
             String regEx="(\\d{6})|(\\d{4})";
             Pattern p = Pattern.compile(regEx);
             Matcher m = p.matcher(msg);
