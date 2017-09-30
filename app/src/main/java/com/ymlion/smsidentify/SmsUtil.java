@@ -9,9 +9,10 @@ import java.util.regex.Pattern;
 
 /**
  * Created by YMlion on 2017/8/9.
+ *
  */
 
-class SmsUtil {
+public class SmsUtil {
     static String findCode(String msg) {
         if (msg.length() > 3 && msg.contains("验证码") || msg.contains("verification code")) {
             String regEx = "(\\d{6})|(\\d{4})";
