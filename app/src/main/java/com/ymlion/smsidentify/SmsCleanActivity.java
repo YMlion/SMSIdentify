@@ -131,33 +131,6 @@ public class SmsCleanActivity extends Activity {
         }
     }
 
-    private String getPerson(String address) {
-        try {
-            ContentResolver resolver = getContentResolver();
-            Uri uri =
-                    Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, address);
-            Cursor cursor;
-            cursor = resolver.query(uri, new String[] { ContactsContract.PhoneLookup.DISPLAY_NAME },
-                    null, null, null);
-            if (cursor != null) {
-                try {
-                    if (cursor.getCount() != 0) {
-                        cursor.moveToFirst();
-                        String name = cursor.getString(0);
-                        return name;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    cursor.close();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return address;
-    }
-
     private class SmsPagerAdapter extends PagerAdapter {
 
         @Override public int getCount() {
@@ -179,7 +152,7 @@ public class SmsCleanActivity extends Activity {
             rv.setLayoutManager(new LinearLayoutManager(SmsCleanActivity.this));
             rv.addItemDecoration(new DividerItemDecoration(SmsCleanActivity.this,
                     DividerItemDecoration.VERTICAL));
-            rv.setAdapter(new SmsRvAdapter(smsLists.get(position)));
+            rv.setAdapter(new SmsRvAdapter(SmsCleanActivity.this, smsLists.get(position)));
             rvs[position] = rv;
             container.addView(rv);
             return rv;
@@ -192,49 +165,6 @@ public class SmsCleanActivity extends Activity {
 
         @Nullable @Override public CharSequence getPageTitle(int position) {
             return TITLE[position];
-        }
-    }
-
-    private class SmsRvAdapter extends RecyclerView.Adapter<SmsViewHolder> {
-
-        private List<SMSMessage> mData;
-
-        SmsRvAdapter(List<SMSMessage> list) {
-            mData = list;
-        }
-
-        @Override public SmsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(SmsCleanActivity.this)
-                    .inflate(R.layout.item_sms, parent, false);
-            return new SmsViewHolder(view);
-        }
-
-        @Override public void onBindViewHolder(SmsViewHolder holder, int position) {
-            SMSMessage sms = mData.get(position);
-            holder.addrTv.setText(getPerson(sms.address));
-            holder.dateTv.setText(SMSMessage.formatDate(sms.date));
-            holder.bodyTv.setText(sms.body);
-            holder.cb.setChecked(sms.checked);
-        }
-
-        @Override public int getItemCount() {
-            return mData == null ? 0 : mData.size();
-        }
-    }
-
-    private class SmsViewHolder extends RecyclerView.ViewHolder {
-
-        TextView addrTv;
-        TextView dateTv;
-        TextView bodyTv;
-        CheckBox cb;
-
-        SmsViewHolder(View itemView) {
-            super(itemView);
-            addrTv = itemView.findViewById(R.id.tv_address);
-            dateTv = itemView.findViewById(R.id.tv_date);
-            bodyTv = itemView.findViewById(R.id.tv_body);
-            cb = itemView.findViewById(R.id.cb_select);
         }
     }
 }
