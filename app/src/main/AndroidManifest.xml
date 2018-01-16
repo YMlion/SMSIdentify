@@ -3,6 +3,7 @@
           package="com.ymlion.smsidentify">
 
     <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
 
     <application
@@ -10,6 +11,13 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <activity android:name=".SmsCleanActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <service
             android:name=".BootService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -30,9 +38,6 @@
                 <action android:name="android.provider.Telephony.SMS_DELIVER"/>
             </intent-filter>
         </receiver>
-
-        <activity android:name=".SmsCleanActivity">
-        </activity>
     </application>
 
 </manifest>
