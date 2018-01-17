@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -263,6 +264,7 @@ public class SmsCleanActivity extends AppCompatActivity
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        Toast.makeText(this, "请开启SMS Clearner的验证码自动识别服务", Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
