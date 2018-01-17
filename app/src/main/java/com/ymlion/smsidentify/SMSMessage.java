@@ -10,6 +10,7 @@ import java.util.Locale;
  */
 
 public class SMSMessage {
+    long id;
     long date;
     String address;
     String body;
@@ -29,8 +30,7 @@ public class SMSMessage {
 
     @Override
     public String toString() {
-        return "SMSMessage{" +
-                "date=" + formatDate(date) +
+        return "SMSMessage{" + " id=" + id + ", date=" + formatDate(date) +
                 ", address='" + address + '\'' +
                 ", body='" + body + '\'' +
                 ", read='" + getMessageRead(read) + '\'' +
@@ -75,31 +75,6 @@ public class SMSMessage {
         return null;
     }
 
-    /*private String getPerson(String address) {
-        try {
-            ContentResolver resolver = getContentResolver();
-            Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, address);
-            Cursor cursor;
-            cursor = resolver.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
-            if (cursor != null) {
-                try {
-                    if (cursor.getCount() != 0) {
-                        cursor.moveToFirst();
-                        String name = cursor.getString(0);
-                        return name;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    cursor.close();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }*/
-
     public static String formatDate(long time) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(new Date(time));
@@ -107,6 +82,10 @@ public class SMSMessage {
 
     public boolean isSent() {
         return type == 2;
+    }
+
+    public boolean isReceived() {
+        return type == 1;
     }
 
     public boolean isRead() {

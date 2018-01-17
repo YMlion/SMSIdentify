@@ -1,4 +1,4 @@
-package com.ymlion.smsidentify;
+package com.ymlion.smsidentify.util;
 
 import android.content.Context;
 import android.database.ContentObserver;
@@ -8,8 +8,8 @@ import android.os.Handler;
 import android.provider.Telephony;
 import android.util.Log;
 
-import static com.ymlion.smsidentify.SmsUtil.copyCode;
-import static com.ymlion.smsidentify.SmsUtil.findCode;
+import static com.ymlion.smsidentify.util.SmsUtil.copyCode;
+import static com.ymlion.smsidentify.util.SmsUtil.findCode;
 
 /**
  * Created by YMlion on 2017/9/29.

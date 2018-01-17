@@ -1,4 +1,4 @@
-package com.ymlion.smsidentify;
+package com.ymlion.smsidentify.util;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  */
 
 public class SmsUtil {
-    static String findCode(String msg) {
+    public static String findCode(String msg) {
         if (msg.length() > 3 && msg.contains("验证码") || msg.contains("verification code")) {
             String regEx = "(\\d{6})|(\\d{4})";
             Pattern p = Pattern.compile(regEx);
@@ -26,7 +26,7 @@ public class SmsUtil {
         return null;
     }
 
-    static void copyCode(Context context, String code) {
+    public static void copyCode(Context context, String code) {
         if (code != null) {
             ClipboardManager cm =
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);

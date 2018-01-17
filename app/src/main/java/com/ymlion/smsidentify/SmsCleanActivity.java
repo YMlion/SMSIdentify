@@ -1,11 +1,10 @@
 package com.ymlion.smsidentify;
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,25 +12,25 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 短信清理
  */
-public class SmsCleanActivity extends Activity {
+public class SmsCleanActivity extends AppCompatActivity {
 
     private static final String TAG = "SmsCleanActivity";
-    private static final String[] TITLE = { "验证码", "其他" };
+    private static final String[] TITLE = { "验证码", "106短信", "其他" };
+    private static final int N = 3;
     private List<SMSMessage> smsList;
     private TabLayout typeTab;
     private ViewPager smsVp;
@@ -42,20 +41,18 @@ public class SmsCleanActivity extends Activity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_clean);
-        rvs = new RecyclerView[2];
-        smsLists = new ArrayList<>();
-        smsLists.add(new ArrayList<>());
-        smsLists.add(new ArrayList<>());
         initView();
-        new Thread(this::queryMessageLog).start();
+        initData();
     }
 
     private void initView() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         typeTab = findViewById(R.id.tab_type);
         smsVp = findViewById(R.id.vp_sms);
-        smsVp.setAdapter(new SmsPagerAdapter());
         typeTab.setupWithViewPager(smsVp);
         typeTab.setTabMode(TabLayout.MODE_SCROLLABLE);
+        rvs = new RecyclerView[N];
         setRefreshLayout();
     }
 
@@ -67,24 +64,42 @@ public class SmsCleanActivity extends Activity {
         });
     }
 
-    private void queryMessageLog() {
+    private void initData() {
+        smsVp.setAdapter(new SmsPagerAdapter());
+        smsLists = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            smsLists.add(new ArrayList<>());
+        }
+        checkPermission();
+    }
+
+    private void checkPermission() {
+        if (PackageManager.PERMISSION_DENIED == checkSelfPermission(Manifest.permission.READ_SMS)) {
+            requestPermissions(new String[] {
+                    Manifest.permission.READ_SMS, Manifest.permission.READ_CONTACTS
+            }, 0x1);
+        } else {
+            new Thread(this::queryMessage).start();
+        }
+    }
+
+    private void queryMessage() {
         smsList = new ArrayList<>();
         ContentResolver resolver = getContentResolver();
         Cursor cursor = resolver.query(Telephony.Sms.CONTENT_URI, new String[] {
-                Telephony.Sms.ADDRESS,   //
-                Telephony.Sms.BODY, Telephony.Sms.DATE, Telephony.Sms.READ, Telephony.Sms.STATUS,
-                Telephony.Sms.TYPE,
+                Telephony.Sms._ID, Telephony.Sms.ADDRESS, Telephony.Sms.BODY, Telephony.Sms.DATE,
+                Telephony.Sms.READ, Telephony.Sms.STATUS, Telephony.Sms.TYPE,
         }, null, null, "date DESC");
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 SMSMessage message = new SMSMessage();
-                message.address = cursor.getString(0);
-                message.body = cursor.getString(1);
-                message.date = cursor.getLong(2);
-                message.read = cursor.getInt(3);
-                message.status = cursor.getInt(4);
-                message.type = cursor.getInt(5);
-                //Log.i(TAG, "message : " + message.toString());
+                message.id = cursor.getInt(0);
+                message.address = cursor.getString(1);
+                message.body = cursor.getString(2);
+                message.date = cursor.getLong(3);
+                message.read = cursor.getInt(4);
+                message.status = cursor.getInt(5);
+                message.type = cursor.getInt(6);
                 smsList.add(message);
             }
             cursor.close();
@@ -97,12 +112,16 @@ public class SmsCleanActivity extends Activity {
                 if (sms.isRead()) {
                     readCount++;
                 }
-                if (sms.body.contains("验证码")) {
-                    codeCount++;
-                    Log.i(TAG, "message : " + sms.toString());
-                    smsLists.get(0).add(sms);
-                } else if (sms.address.startsWith("106")) {
-                    smsLists.get(1).add(sms);
+                if (sms.isReceived()) {
+                    if (sms.body.contains("验证码")) {
+                        codeCount++;
+                        Log.i(TAG, "message : " + sms.toString());
+                        smsLists.get(0).add(sms);
+                    } else if (sms.address.startsWith("106")) {
+                        smsLists.get(1).add(sms);
+                    } else {
+                        smsLists.get(2).add(sms);
+                    }
                 }
             }
             runOnUiThread(() -> {
@@ -110,8 +129,8 @@ public class SmsCleanActivity extends Activity {
                 for (RecyclerView rv : rvs) {
                     if (rv != null) {
                         rv.getAdapter().notifyDataSetChanged();
-                        typeTab.getTabAt(i).setText(TITLE[i] + "(" + smsLists.get(i).size() + ")");
                     }
+                    typeTab.getTabAt(i).setText(TITLE[i] + "(" + smsLists.get(i).size() + ")");
                     i++;
                 }
             });
@@ -131,10 +150,17 @@ public class SmsCleanActivity extends Activity {
         }
     }
 
+    @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        if (requestCode == 0x1 && grantResults[0] == 0) {
+            new Thread(this::queryMessage).start();
+        }
+    }
+
     private class SmsPagerAdapter extends PagerAdapter {
 
         @Override public int getCount() {
-            return 2;
+            return N;
         }
 
         @Override public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {

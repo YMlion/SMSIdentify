@@ -26,8 +26,7 @@ public class SmsRvAdapter extends RecyclerView.Adapter<SmsViewHolder> {
     }
 
     @Override public SmsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext)
-                .inflate(R.layout.item_sms, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_sms, parent, false);
         return new SmsViewHolder(view);
     }
 
@@ -37,6 +36,12 @@ public class SmsRvAdapter extends RecyclerView.Adapter<SmsViewHolder> {
         holder.dateTv.setText(SMSMessage.formatDate(sms.date));
         holder.bodyTv.setText(sms.body);
         holder.cb.setChecked(sms.checked);
+        holder.cb.setTag(sms.id + "");
+        holder.cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (buttonView.getTag().equals(mData.get(position).id + "")) {
+                mData.get(position).checked = isChecked;
+            }
+        });
     }
 
     @Override public int getItemCount() {

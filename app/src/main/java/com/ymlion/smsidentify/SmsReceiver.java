@@ -1,19 +1,13 @@
 package com.ymlion.smsidentify;
 
 import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
-import android.widget.Toast;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static com.ymlion.smsidentify.SmsUtil.copyCode;
-import static com.ymlion.smsidentify.SmsUtil.findCode;
+import static com.ymlion.smsidentify.util.SmsUtil.copyCode;
+import static com.ymlion.smsidentify.util.SmsUtil.findCode;
 
 /**
  * Created by YMlion on 2017/7/13.
