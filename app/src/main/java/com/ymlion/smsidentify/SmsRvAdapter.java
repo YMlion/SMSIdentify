@@ -35,10 +35,11 @@ public class SmsRvAdapter extends RecyclerView.Adapter<SmsViewHolder> {
         holder.addrTv.setText(getPerson(sms.address));
         holder.dateTv.setText(SMSMessage.formatDate(sms.date));
         holder.bodyTv.setText(sms.body);
-        holder.cb.setChecked(sms.checked);
         holder.cb.setTag(sms.id + "");
+        holder.cb.setChecked(sms.checked);
         holder.cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (buttonView.getTag().equals(mData.get(position).id + "")) {
+            Object tag = buttonView.getTag();
+            if (tag.equals(mData.get(position).id + "")) {
                 mData.get(position).checked = isChecked;
             }
         });

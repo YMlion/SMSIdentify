@@ -4,4 +4,4 @@
     android:accessibilityEventTypes="typeNotificationStateChanged"
     android:description="@string/description"
     android:notificationTimeout="100"
-    android:settingsActivity=""/>
+    android:settingsActivity="com.ymlion.smsidentify.SmsCleanActivity"/>

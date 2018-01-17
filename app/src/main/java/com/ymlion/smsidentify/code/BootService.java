@@ -1,4 +1,4 @@
-package com.ymlion.smsidentify;
+package com.ymlion.smsidentify.code;
 
 import android.Manifest;
 import android.accessibilityservice.AccessibilityService;

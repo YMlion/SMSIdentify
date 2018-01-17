@@ -1,4 +1,4 @@
-package com.ymlion.smsidentify;
+package com.ymlion.smsidentify.code;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

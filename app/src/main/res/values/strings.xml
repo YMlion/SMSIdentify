@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">SMS-Identify</string>
+    <string name="app_name">SMS Cleaner</string>
     <string name="description">该服务用于保持在后台运行。\n打开之后，请授予该应用读取短信的权限。</string>
+    <string name="code_verify">验证码识别</string>
 </resources>
