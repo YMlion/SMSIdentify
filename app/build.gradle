@@ -7,8 +7,8 @@ android {
         applicationId "com.ymlion.smsidentify"
         minSdkVersion 23
         targetSdkVersion 27
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "2.0"
     }
 
     signingConfigs {
