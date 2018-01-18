@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import java.util.List;
 
 /**
+ * sms adapter
+ *
  * Created by YMlion on 2018/1/16.
  */
 
@@ -61,8 +63,7 @@ public class SmsRvAdapter extends RecyclerView.Adapter<SmsViewHolder> {
                 try {
                     if (cursor.getCount() != 0) {
                         cursor.moveToFirst();
-                        String name = cursor.getString(0);
-                        return name;
+                        return cursor.getString(0);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

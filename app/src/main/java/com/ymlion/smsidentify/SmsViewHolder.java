@@ -6,10 +6,12 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 /**
+ * sms view holder
+ *
  * Created by YMlion on 2018/1/16.
  */
 
-public class SmsViewHolder extends RecyclerView.ViewHolder {
+class SmsViewHolder extends RecyclerView.ViewHolder {
 
     TextView addrTv;
     TextView dateTv;

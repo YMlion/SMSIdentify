@@ -8,8 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * 验证码识别工具类
  * Created by YMlion on 2017/8/9.
- *
  */
 
 public class SmsUtil {
@@ -29,10 +29,12 @@ public class SmsUtil {
     public static void copyCode(Context context, String code) {
         if (code != null) {
             ClipboardManager cm =
-                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("SMS", code);
-            cm.setPrimaryClip(clip);
-            Toast.makeText(context, "验证码：" + code + " 已经复制到剪贴板", Toast.LENGTH_SHORT).show();
+            if (cm != null) {
+                cm.setPrimaryClip(clip);
+                Toast.makeText(context, "验证码：" + code + " 已经复制到剪贴板", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

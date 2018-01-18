@@ -28,8 +28,6 @@ public class BootService extends AccessibilityService {
                 startActivity(intent);
             }
         }
-        //getContentResolver().registerContentObserver(Uri.parse("content://sms"), true,
-        //        new SmsObserver(null, this));
     }
 
     @Override public void onAccessibilityEvent(AccessibilityEvent event) {

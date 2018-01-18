@@ -10,6 +10,8 @@ import static com.ymlion.smsidentify.util.SmsUtil.copyCode;
 import static com.ymlion.smsidentify.util.SmsUtil.findCode;
 
 /**
+ * new sms receiver
+ *
  * Created by YMlion on 2017/7/13.
  */
 

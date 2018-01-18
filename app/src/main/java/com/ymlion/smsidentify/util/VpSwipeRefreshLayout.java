@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
 /**
+ * 解决ViewPager和SwipeRefreshLayout冲突问题
+ * 
  * Created by YMlion on 2018/1/17.
  */
 

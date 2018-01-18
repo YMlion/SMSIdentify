@@ -76,16 +76,16 @@ public class SMSMessage {
         return null;
     }
 
-    public static String formatDate(long time) {
+    static String formatDate(long time) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(new Date(time));
     }
 
-    public boolean isReceived() {
+    boolean isReceived() {
         return type == 1;
     }
 
-    public boolean isUnread() {
+    boolean isUnread() {
         return read == 0;
     }
 }
