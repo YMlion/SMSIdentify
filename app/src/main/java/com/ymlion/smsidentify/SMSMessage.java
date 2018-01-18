@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
+ * sms bean
  * Created by YMlion on 2018/1/16.
  */
 
@@ -80,15 +81,11 @@ public class SMSMessage {
         return format.format(new Date(time));
     }
 
-    public boolean isSent() {
-        return type == 2;
-    }
-
     public boolean isReceived() {
         return type == 1;
     }
 
-    public boolean isRead() {
-        return read == 1;
+    public boolean isUnread() {
+        return read == 0;
     }
 }

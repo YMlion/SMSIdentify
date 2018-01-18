@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
@@ -40,17 +42,17 @@ public class SmsCleanActivity extends AppCompatActivity
         View.OnClickListener {
 
     private static final String TAG = "SmsCleanActivity";
-    private static final String[] TITLE = { "验证码", "退订", "106", "已发送", "其他" };
+    private static final String[] TITLE = { "验证码", "订阅", "106", "未读", "已发送", "其他" };
 
     private static final int INDEX_CODE = 0;
-    private static final int INDEX_UNSUB = 1;
+    private static final int INDEX_SUB = 1;
     private static final int INDEX_106 = 2;
-    private static final int INDEX_SENT = 3;
-    private static final int INDEX_OTHERS = 4;
+    private static final int INDEX_UNREAD = 3;
+    private static final int INDEX_SENT = 4;
+    private static final int INDEX_OTHERS = 5;
 
-    private static final int NUM_TYPE = 5;
+    private static final int NUM_TYPE = 6;
 
-    private List<SMSMessage> smsList;
     private TabLayout typeTab;
     private ViewPager smsVp;
     private RecyclerView[] rvs;
@@ -95,10 +97,12 @@ public class SmsCleanActivity extends AppCompatActivity
         for (int i = 0; i < NUM_TYPE; i++) {
             smsLists.add(new ArrayList<>());
         }
-        checkPermission();
+        if (Build.VERSION.SDK_INT > 22) {
+            checkPermission();
+        }
     }
 
-    private void checkPermission() {
+    @RequiresApi(api = Build.VERSION_CODES.M) private void checkPermission() {
         if (PackageManager.PERMISSION_DENIED == checkSelfPermission(Manifest.permission.READ_SMS)) {
             requestPermissions(new String[] {
                     Manifest.permission.READ_SMS, Manifest.permission.READ_CONTACTS
@@ -113,13 +117,18 @@ public class SmsCleanActivity extends AppCompatActivity
     }
 
     private void queryMessage(boolean refresh) {
-        smsList = new ArrayList<>();
+        int total = 0;
         ContentResolver resolver = getContentResolver();
         Cursor cursor = resolver.query(Telephony.Sms.CONTENT_URI, new String[] {
                 Telephony.Sms._ID, Telephony.Sms.ADDRESS, Telephony.Sms.BODY, Telephony.Sms.DATE,
                 Telephony.Sms.READ, Telephony.Sms.STATUS, Telephony.Sms.TYPE,
         }, null, null, "date DESC");
         if (cursor != null) {
+            if (refresh) {
+                for (List<SMSMessage> list : smsLists) {
+                    list.clear();
+                }
+            }
             while (cursor.moveToNext()) {
                 SMSMessage message = new SMSMessage();
                 message.id = cursor.getInt(0);
@@ -129,68 +138,65 @@ public class SmsCleanActivity extends AppCompatActivity
                 message.read = cursor.getInt(4);
                 message.status = cursor.getInt(5);
                 message.type = cursor.getInt(6);
-                smsList.add(message);
+                classifySms(message);
+                total++;
             }
             cursor.close();
-            int sentCount = 0, readCount = 0;
-            int codeCount = 0;
-            if (refresh) {
-                for (List<SMSMessage> list : smsLists) {
-                    list.clear();
-                }
-            }
-            for (SMSMessage sms : smsList) {
-                if (sms.isRead()) {
-                    readCount++;
-                }
-                if (sms.isReceived()) {
-                    if (sms.body.contains("验证码")) {
-                        codeCount++;
-                        Log.i(TAG, "message : " + sms.toString());
-                        smsLists.get(INDEX_CODE).add(sms);
-                    } else if (sms.body.contains("退订")) {
-                        codeCount++;
-                        Log.i(TAG, "message : " + sms.toString());
-                        smsLists.get(INDEX_UNSUB).add(sms);
-                    } else if (sms.address.startsWith("106")) {
-                        smsLists.get(INDEX_106).add(sms);
-                    } else {
-                        smsLists.get(INDEX_OTHERS).add(sms);
-                    }
-                } else {
-                    sentCount++;
-                    smsLists.get(INDEX_SENT).add(sms);
-                }
-            }
-            runOnUiThread(() -> {
-                int i = 0;
-                for (RecyclerView rv : rvs) {
-                    if (rv != null) {
-                        rv.getAdapter().notifyDataSetChanged();
-                    }
-                    int size = smsLists.get(i).size();
-                    if (size > 0) {
-                        typeTab.getTabAt(i).setText(TITLE[i] + "(" + size + ")");
-                    }
-                    i++;
-                }
-                if (refresh) {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-            });
+            runOnUiThread(() -> updateSmsList(refresh));
             Log.d(TAG, "总共 "
-                    + smsList.size()
+                    + total
                     + " 条短信，接收"
-                    + (smsList.size() - sentCount)
+                    + (total - smsLists.get(INDEX_SENT).size())
                     + "条，发送"
-                    + sentCount
+                    + smsLists.get(INDEX_SENT).size()
                     + "条；已读"
-                    + readCount
+                    + (total - smsLists.get(INDEX_UNREAD).size())
                     + "条，未读"
-                    + (smsList.size() - readCount)
+                    + smsLists.get(INDEX_UNREAD).size()
                     + "条，验证码共"
-                    + codeCount
+                    + smsLists.get(INDEX_CODE).size()
                     + "条");
+        }
+    }
+
+    private void classifySms(SMSMessage sms) {
+        if (sms.isReceived()) {
+            if (sms.body.contains("验证码")) {
+                Log.i(TAG, "message : " + sms.toString());
+                smsLists.get(INDEX_CODE).add(sms);
+            } else if (sms.body.contains("退订")) {
+                Log.i(TAG, "message : " + sms.toString());
+                smsLists.get(INDEX_SUB).add(sms);
+            } else if (sms.address.startsWith("106")) {
+                smsLists.get(INDEX_106).add(sms);
+            } else {
+                smsLists.get(INDEX_OTHERS).add(sms);
+            }
+        } else {
+            smsLists.get(INDEX_SENT).add(sms);
+        }
+        if (sms.isUnread()) {
+            smsLists.get(INDEX_UNREAD).add(sms);
+        }
+    }
+
+    private void updateSmsList(boolean refresh) {
+        int i = 0;
+        for (RecyclerView rv : rvs) {
+            if (rv != null) {
+                rv.getAdapter().notifyDataSetChanged();
+            }
+            int size = smsLists.get(i).size();
+            if (size > 0) {
+                TabLayout.Tab tab = typeTab.getTabAt(i);
+                if (tab != null) {
+                    tab.setText(TITLE[i] + "(" + size + ")");
+                }
+            }
+            i++;
+        }
+        if (refresh) {
+            mSwipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -240,18 +246,24 @@ public class SmsCleanActivity extends AppCompatActivity
     }
 
     private void deleteSms(List<SMSMessage> list) {
+        int preSize = list.size();
         for (int i = 0; i < list.size(); i++) {
             SMSMessage smsMessage = list.get(i);
             if (smsMessage.checked) {
                 int rows = getContentResolver().delete(Uri.parse("content://sms/" + smsMessage.id),
                         "date=?", new String[] { smsMessage.date + "" });
-                Log.e("log>>>", "Delete success......... rows: " + rows);
-                Log.e("log>>>", "Delete success......... rows: " + smsMessage.body);
                 if (rows > 0) {
+                    Log.d(TAG, "deleted msg is: " + smsMessage.body);
                     list.remove(i);
                     i--;
+                } else {
+                    Log.w(TAG, "delete sms failure");
                 }
             }
+        }
+        int count = preSize - list.size();
+        if (count > 0) {
+            Toast.makeText(this, "成功删除" + count + "条", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -264,7 +276,7 @@ public class SmsCleanActivity extends AppCompatActivity
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        Toast.makeText(this, "请开启SMS Clearner的验证码自动识别服务", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "请开启SMS Cleaner的验证码自动识别服务", Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
