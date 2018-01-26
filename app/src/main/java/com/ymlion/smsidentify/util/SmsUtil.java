@@ -15,11 +15,14 @@ import java.util.regex.Pattern;
 public class SmsUtil {
     public static String findCode(String msg) {
         if (msg.length() > 3 && msg.contains("验证码") || msg.contains("verification code")) {
-            String regEx = "(\\d{6})|(\\d{4})";
+            String regEx = "(\\d{6,})|(\\d{4,})";
             Pattern p = Pattern.compile(regEx);
             Matcher m = p.matcher(msg);
-            if (m.find()) {
-                return m.group();
+            while (m.find()) {
+                String group = m.group();
+                if (group.length() <= 6) {
+                    return group;
+                }
             }
         }
 
