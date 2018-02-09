@@ -14,19 +14,22 @@ import java.util.regex.Pattern;
 
 public class SmsUtil {
     public static String findCode(String msg) {
+        String result = null;
         if (msg.length() > 3 && msg.contains("验证码") || msg.contains("verification code")) {
             String regEx = "(\\d{6,})|(\\d{4,})";
             Pattern p = Pattern.compile(regEx);
             Matcher m = p.matcher(msg);
             while (m.find()) {
                 String group = m.group();
-                if (group.length() <= 6) {
+                if (group.length() == 6) {
                     return group;
+                } else if (group.length() == 4) {
+                    result = group;
                 }
             }
         }
 
-        return null;
+        return result;
     }
 
     public static void copyCode(Context context, String code) {

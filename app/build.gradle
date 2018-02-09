@@ -44,4 +44,5 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:design:27.0.2'
+    testCompile 'junit:junit:4.12'
 }
