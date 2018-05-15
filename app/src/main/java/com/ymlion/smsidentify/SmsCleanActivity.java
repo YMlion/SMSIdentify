@@ -167,6 +167,12 @@ public class SmsCleanActivity extends AppCompatActivity
             } else if (sms.body.contains("退订")) {
                 Log.i(TAG, "message : " + sms.toString());
                 smsLists.get(INDEX_SUB).add(sms);
+            } else if (sms.body.contains("随机码")) {
+                Log.i(TAG, "message : " + sms.toString());
+                smsLists.get(INDEX_CODE).add(sms);
+            } else if (sms.body.contains("verification code")) {
+                Log.i(TAG, "message : " + sms.toString());
+                smsLists.get(INDEX_CODE).add(sms);
             } else if (sms.address.startsWith("106")) {
                 smsLists.get(INDEX_106).add(sms);
             } else {

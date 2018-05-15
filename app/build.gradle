@@ -7,8 +7,8 @@ android {
         applicationId "com.ymlion.smsidentify"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 5
-        versionName "2.2"
+        versionCode 6
+        versionName "2.3"
     }
 
     signingConfigs {
@@ -43,6 +43,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:design:27.0.2'
-    testCompile 'junit:junit:4.12'
+    implementation 'com.android.support:design:27.1.1'
+    testImplementation 'junit:junit:4.12'
 }

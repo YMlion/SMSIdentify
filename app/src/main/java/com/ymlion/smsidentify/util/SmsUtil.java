@@ -13,9 +13,9 @@ import java.util.regex.Pattern;
  */
 
 public class SmsUtil {
-    public static String findCode(String msg) {
+    public static String findCode(String msg, String key) {
         String result = null;
-        if (msg.length() > 3 && msg.contains("验证码") || msg.contains("verification code")) {
+        if (msg.length() > 3 && msg.contains(key)) {
             String regEx = "(\\d{6,})|(\\d{4,})";
             Pattern p = Pattern.compile(regEx);
             Matcher m = p.matcher(msg);

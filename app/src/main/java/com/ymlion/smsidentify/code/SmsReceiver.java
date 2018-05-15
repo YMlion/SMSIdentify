@@ -31,7 +31,13 @@ public class SmsReceiver extends BroadcastReceiver {
                 msg = SmsMessage.createFromPdu((byte[]) object);
                 msgBody.append(msg.getDisplayMessageBody());
             }
-            copyCode(context, findCode(msgBody.toString()));
+            findAndCopy(context, msgBody.toString());
         }
+    }
+
+    private void findAndCopy(Context context, String msg) {
+        new Thread(() -> copyCode(context, findCode(msg, "验证码"))).start();
+        new Thread(() -> copyCode(context, findCode(msg, "随机码"))).start();
+        new Thread(() -> copyCode(context, findCode(msg, "verification code"))).start();
     }
 }
