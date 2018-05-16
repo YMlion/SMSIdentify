@@ -17,6 +17,9 @@ import static com.ymlion.smsidentify.util.SmsUtil.findCode;
 
 public class SmsReceiver extends BroadcastReceiver {
 
+    private String codeResult;
+    private volatile int flag = 0;
+
     @Override public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
         SmsMessage msg;
@@ -36,8 +39,27 @@ public class SmsReceiver extends BroadcastReceiver {
     }
 
     private void findAndCopy(Context context, String msg) {
-        new Thread(() -> copyCode(context, findCode(msg, "验证码"))).start();
-        new Thread(() -> copyCode(context, findCode(msg, "随机码"))).start();
-        new Thread(() -> copyCode(context, findCode(msg, "verification code"))).start();
+        find(msg, "验证码");
+        find(msg, "随机码");
+        find(msg, "verification code");
+        while (flag < 3) {
+            // do nothing
+        }
+        copyCode(context, codeResult);
+    }
+
+    private void find(String msg, String key) {
+        new Thread(() -> {
+            if (flag >= 3) {
+                return;
+            }
+            String code = findCode(msg, key);
+            if (code != null) {
+                codeResult = code;
+                flag = 3;
+            } else {
+                flag++;
+            }
+        }).start();
     }
 }
