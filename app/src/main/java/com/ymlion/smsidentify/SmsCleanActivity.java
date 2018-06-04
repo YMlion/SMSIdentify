@@ -196,10 +196,12 @@ public class SmsCleanActivity extends AppCompatActivity
                 rv.getAdapter().notifyDataSetChanged();
             }
             int size = smsLists.get(i).size();
-            if (size > 0) {
-                TabLayout.Tab tab = typeTab.getTabAt(i);
-                if (tab != null) {
+            TabLayout.Tab tab = typeTab.getTabAt(i);
+            if (tab != null) {
+                if (size > 0) {
                     tab.setText(TITLE[i] + "(" + size + ")");
+                } else {
+                    tab.setText(TITLE[i]);
                 }
             }
             i++;
@@ -251,10 +253,12 @@ public class SmsCleanActivity extends AppCompatActivity
                 if (deleteSms(list)) {
                     rvs[index].getAdapter().notifyDataSetChanged();
                     int size = smsLists.get(index).size();
-                    if (size > 0) {
-                        TabLayout.Tab tab = typeTab.getTabAt(index);
-                        if (tab != null) {
+                    TabLayout.Tab tab = typeTab.getTabAt(index);
+                    if (tab != null) {
+                        if (size > 0) {
                             tab.setText(TITLE[index] + "(" + size + ")");
+                        } else {
+                            tab.setText(TITLE[index]);
                         }
                     }
                 }
