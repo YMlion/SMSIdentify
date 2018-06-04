@@ -1,4 +1,4 @@
-package com.ymlion.smsidentify;
+package com.ymlion.smsidentify.model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -11,23 +11,23 @@ import java.util.Locale;
  */
 
 public class SMSMessage {
-    long id;
-    long date;
-    String address;
-    String body;
+    public long id;
+    public long date;
+    public String address;
+    public String body;
     /**
      * 0：未读；1：已读
      */
-    int read;
-    int status;
+    public int read;
+    public int status;
     /**
      * 1：接收的消息；2：已发送消息
      */
-    int type;
+    public int type;
     /**
      * 是否已被选择
      */
-    boolean checked = false;
+    public boolean checked = false;
 
     @Override
     public String toString() {
@@ -76,16 +76,16 @@ public class SMSMessage {
         return null;
     }
 
-    static String formatDate(long time) {
+    public static String formatDate(long time) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(new Date(time));
     }
 
-    boolean isReceived() {
+    public boolean isReceived() {
         return type == 1;
     }
 
-    boolean isUnread() {
+    public boolean isUnread() {
         return read == 0;
     }
 }

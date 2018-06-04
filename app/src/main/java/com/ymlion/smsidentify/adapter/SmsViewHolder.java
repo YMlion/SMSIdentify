@@ -1,9 +1,10 @@
-package com.ymlion.smsidentify;
+package com.ymlion.smsidentify.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import com.ymlion.smsidentify.R;
 
 /**
  * sms view holder

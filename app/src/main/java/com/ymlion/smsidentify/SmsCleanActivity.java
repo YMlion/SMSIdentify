@@ -24,6 +24,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +32,8 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Toast;
+import com.ymlion.smsidentify.adapter.SmsRvAdapter;
+import com.ymlion.smsidentify.model.SMSMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -245,14 +248,23 @@ public class SmsCleanActivity extends AppCompatActivity
             case R.id.fab:
                 int index = smsVp.getCurrentItem();
                 List<SMSMessage> list = smsLists.get(index);
-                deleteSms(list);
-                rvs[index].getAdapter().notifyDataSetChanged();
+                if (deleteSms(list)) {
+                    rvs[index].getAdapter().notifyDataSetChanged();
+                    int size = smsLists.get(index).size();
+                    if (size > 0) {
+                        TabLayout.Tab tab = typeTab.getTabAt(index);
+                        if (tab != null) {
+                            tab.setText(TITLE[index] + "(" + size + ")");
+                        }
+                    }
+                }
                 break;
         }
     }
 
-    private void deleteSms(List<SMSMessage> list) {
+    private boolean deleteSms(List<SMSMessage> list) {
         int preSize = list.size();
+        int checkedNum = 0;
         for (int i = 0; i < list.size(); i++) {
             SMSMessage smsMessage = list.get(i);
             if (smsMessage.checked) {
@@ -265,11 +277,24 @@ public class SmsCleanActivity extends AppCompatActivity
                 } else {
                     Log.w(TAG, "delete sms failure");
                 }
+                checkedNum++;
             }
+        }
+        if (checkedNum == 0) {
+            Toast.makeText(this, "请勾选要删除的短信", Toast.LENGTH_SHORT).show();
+            return false;
         }
         int count = preSize - list.size();
         if (count > 0) {
             Toast.makeText(this, "成功删除" + count + "条", Toast.LENGTH_SHORT).show();
+            return true;
+        } else {
+            String msg = "删除失败";
+            if (!Telephony.Sms.getDefaultSmsPackage(this).equals(getPackageName())) {
+                msg = "该应用非默认短信应用，没有删除短信的权限，修改短信默认应用为该应用之后方可删除";
+            }
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            return false;
         }
     }
 
@@ -302,8 +327,8 @@ public class SmsCleanActivity extends AppCompatActivity
                 container.addView(rvs[position]);
                 return rvs[position];
             }
-            RecyclerView rv = new RecyclerView(SmsCleanActivity.this);
-            rv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+            RecyclerView rv = (RecyclerView) LayoutInflater.from(SmsCleanActivity.this)
+                    .inflate(R.layout.recycler_view, container, false);
             rv.setLayoutManager(new LinearLayoutManager(SmsCleanActivity.this));
             rv.addItemDecoration(new DividerItemDecoration(SmsCleanActivity.this,
                     DividerItemDecoration.VERTICAL));

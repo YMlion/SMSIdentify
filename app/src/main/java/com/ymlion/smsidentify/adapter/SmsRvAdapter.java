@@ -1,4 +1,4 @@
-package com.ymlion.smsidentify;
+package com.ymlion.smsidentify.adapter;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.ymlion.smsidentify.R;
+import com.ymlion.smsidentify.model.SMSMessage;
 import java.util.List;
 
 /**
@@ -22,7 +24,7 @@ public class SmsRvAdapter extends RecyclerView.Adapter<SmsViewHolder> {
     private Context mContext;
     private List<SMSMessage> mData;
 
-    SmsRvAdapter(Context context, List<SMSMessage> list) {
+    public SmsRvAdapter(Context context, List<SMSMessage> list) {
         mContext = context;
         mData = list;
     }
@@ -33,6 +35,7 @@ public class SmsRvAdapter extends RecyclerView.Adapter<SmsViewHolder> {
     }
 
     @Override public void onBindViewHolder(SmsViewHolder holder, int position) {
+        holder.itemView.setOnClickListener(v -> holder.cb.toggle());
         SMSMessage sms = mData.get(position);
         holder.addrTv.setText(getPerson(sms.address));
         holder.dateTv.setText(SMSMessage.formatDate(sms.date));
