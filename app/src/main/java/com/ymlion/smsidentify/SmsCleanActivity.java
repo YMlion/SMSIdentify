@@ -89,6 +89,8 @@ public class SmsCleanActivity extends AppCompatActivity
 
     private void setRefreshLayout() {
         mSwipeRefreshLayout = findViewById(R.id.srl_sms);
+        mSwipeRefreshLayout.setDistanceToTriggerSync(
+                (int) (getResources().getDisplayMetrics().density * 150));
         mSwipeRefreshLayout.setOnRefreshListener(
                 () -> new Thread(() -> queryMessage(true)).start());
     }
