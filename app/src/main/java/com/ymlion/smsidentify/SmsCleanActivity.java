@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -104,6 +105,8 @@ public class SmsCleanActivity extends AppCompatActivity
         }
         if (Build.VERSION.SDK_INT > 22) {
             checkPermission();
+        } else {
+            new Thread(this::queryMessage).start();
         }
     }
 
@@ -287,19 +290,19 @@ public class SmsCleanActivity extends AppCompatActivity
             }
         }
         if (checkedNum == 0) {
-            Toast.makeText(this, "请勾选要删除的短信", Toast.LENGTH_SHORT).show();
+            Snackbar.make(smsVp, "请勾选要删除的短信", Snackbar.LENGTH_SHORT).show();
             return false;
         }
         int count = preSize - list.size();
         if (count > 0) {
-            Toast.makeText(this, "成功删除" + count + "条", Toast.LENGTH_SHORT).show();
+            Snackbar.make(smsVp, "成功删除" + count + "条", Snackbar.LENGTH_SHORT).show();
             return true;
         } else {
             String msg = "删除失败";
             if (!Telephony.Sms.getDefaultSmsPackage(this).equals(getPackageName())) {
-                msg = "该应用非默认短信应用，没有删除短信的权限，修改短信默认应用为该应用之后方可删除";
+                msg = "该应用非默认短信应用，没有删除权限，请修改为默认";
             }
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            Snackbar.make(smsVp, msg, Snackbar.LENGTH_LONG).show();
             return false;
         }
     }
