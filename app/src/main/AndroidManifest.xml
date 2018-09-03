@@ -36,7 +36,11 @@
                 <data android:scheme="mms"/>
                 <data android:scheme="mmsto"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
         </activity>
+
         <service
             android:name=".code.BootService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -47,22 +51,6 @@
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility"/>
-        </service>
-
-        <!-- Service that delivers messages from the phone "quick response" -->
-        <service
-            android:name=".HeadlessSmsSendService"
-            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-
-                <data android:scheme="sms"/>
-                <data android:scheme="smsto"/>
-                <data android:scheme="mms"/>
-                <data android:scheme="mmsto"/>
-            </intent-filter>
         </service>
 
         <!-- Service that delivers messages from the phone "quick response" -->

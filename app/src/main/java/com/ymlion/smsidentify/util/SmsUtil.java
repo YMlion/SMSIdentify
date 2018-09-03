@@ -39,7 +39,8 @@ public class SmsUtil {
             ClipData clip = ClipData.newPlainText("SMS", code);
             if (cm != null) {
                 cm.setPrimaryClip(clip);
-                Toast.makeText(context, "验证码：" + code + " 已经复制到剪贴板", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "验证码：" + code + " 已经复制到剪贴板", Toast.LENGTH_LONG)
+                     .show();
             }
         }
     }

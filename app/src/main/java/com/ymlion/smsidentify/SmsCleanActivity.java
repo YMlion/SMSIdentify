@@ -113,7 +113,9 @@ public class SmsCleanActivity extends AppCompatActivity
     @RequiresApi(api = Build.VERSION_CODES.M) private void checkPermission() {
         if (PackageManager.PERMISSION_DENIED == checkSelfPermission(Manifest.permission.READ_SMS)) {
             requestPermissions(new String[] {
-                    Manifest.permission.READ_SMS, Manifest.permission.READ_CONTACTS
+                    Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS,
+                    Manifest.permission.READ_SMS, Manifest.permission.RECEIVE_WAP_PUSH,
+                    Manifest.permission.RECEIVE_MMS, Manifest.permission.READ_CONTACTS
             }, 0x1);
         } else {
             new Thread(this::queryMessage).start();
@@ -153,16 +155,16 @@ public class SmsCleanActivity extends AppCompatActivity
             runOnUiThread(() -> updateSmsList(refresh));
             Log.d(TAG, "总共 "
                     + total
-                    + " 条短信，接收"
-                    + (total - smsLists.get(INDEX_SENT).size())
-                    + "条，发送"
-                    + smsLists.get(INDEX_SENT).size()
-                    + "条；已读"
-                    + (total - smsLists.get(INDEX_UNREAD).size())
-                    + "条，未读"
-                    + smsLists.get(INDEX_UNREAD).size()
-                    + "条，验证码共"
-                    + smsLists.get(INDEX_CODE).size()
+                    + " 条短信，接收" + (total - smsLists.get(INDEX_SENT)
+                                                   .size())
+                    + "条，发送" + smsLists.get(INDEX_SENT)
+                                       .size()
+                    + "条；已读" + (total - smsLists.get(INDEX_UNREAD)
+                                                .size())
+                    + "条，未读" + smsLists.get(INDEX_UNREAD)
+                                       .size()
+                    + "条，验证码共" + smsLists.get(INDEX_CODE)
+                                         .size()
                     + "条");
         }
     }
@@ -171,26 +173,34 @@ public class SmsCleanActivity extends AppCompatActivity
         if (sms.isReceived()) {
             if (sms.body.contains("验证码")) {
                 Log.i(TAG, "message : " + sms.toString());
-                smsLists.get(INDEX_CODE).add(sms);
+                smsLists.get(INDEX_CODE)
+                        .add(sms);
             } else if (sms.body.contains("退订")) {
                 Log.i(TAG, "message : " + sms.toString());
-                smsLists.get(INDEX_SUB).add(sms);
+                smsLists.get(INDEX_SUB)
+                        .add(sms);
             } else if (sms.body.contains("随机码")) {
                 Log.i(TAG, "message : " + sms.toString());
-                smsLists.get(INDEX_CODE).add(sms);
+                smsLists.get(INDEX_CODE)
+                        .add(sms);
             } else if (sms.body.contains("verification code")) {
                 Log.i(TAG, "message : " + sms.toString());
-                smsLists.get(INDEX_CODE).add(sms);
+                smsLists.get(INDEX_CODE)
+                        .add(sms);
             } else if (sms.address.startsWith("106")) {
-                smsLists.get(INDEX_106).add(sms);
+                smsLists.get(INDEX_106)
+                        .add(sms);
             } else {
-                smsLists.get(INDEX_OTHERS).add(sms);
+                smsLists.get(INDEX_OTHERS)
+                        .add(sms);
             }
         } else {
-            smsLists.get(INDEX_SENT).add(sms);
+            smsLists.get(INDEX_SENT)
+                    .add(sms);
         }
         if (sms.isUnread()) {
-            smsLists.get(INDEX_UNREAD).add(sms);
+            smsLists.get(INDEX_UNREAD)
+                    .add(sms);
         }
     }
 
@@ -198,9 +208,11 @@ public class SmsCleanActivity extends AppCompatActivity
         int i = 0;
         for (RecyclerView rv : rvs) {
             if (rv != null) {
-                rv.getAdapter().notifyDataSetChanged();
+                rv.getAdapter()
+                  .notifyDataSetChanged();
             }
-            int size = smsLists.get(i).size();
+            int size = smsLists.get(i)
+                               .size();
             TabLayout.Tab tab = typeTab.getTabAt(i);
             if (tab != null) {
                 if (size > 0) {
@@ -236,7 +248,8 @@ public class SmsCleanActivity extends AppCompatActivity
         for (SMSMessage smsMessage : list) {
             smsMessage.checked = isChecked;
         }
-        rvs[index].getAdapter().notifyDataSetChanged();
+        rvs[index].getAdapter()
+                  .notifyDataSetChanged();
     }
 
     @Override
@@ -256,8 +269,10 @@ public class SmsCleanActivity extends AppCompatActivity
                 int index = smsVp.getCurrentItem();
                 List<SMSMessage> list = smsLists.get(index);
                 if (deleteSms(list)) {
-                    rvs[index].getAdapter().notifyDataSetChanged();
-                    int size = smsLists.get(index).size();
+                    rvs[index].getAdapter()
+                              .notifyDataSetChanged();
+                    int size = smsLists.get(index)
+                                       .size();
                     TabLayout.Tab tab = typeTab.getTabAt(index);
                     if (tab != null) {
                         if (size > 0) {
@@ -278,7 +293,8 @@ public class SmsCleanActivity extends AppCompatActivity
             SMSMessage smsMessage = list.get(i);
             if (smsMessage.checked) {
                 int rows = getContentResolver().delete(Uri.parse("content://sms/" + smsMessage.id),
-                        "date=?", new String[] { smsMessage.date + "" });
+                                                       "date=?",
+                                                       new String[] { smsMessage.date + "" });
                 if (rows > 0) {
                     Log.d(TAG, "deleted msg is: " + smsMessage.body);
                     list.remove(i);
@@ -290,19 +306,23 @@ public class SmsCleanActivity extends AppCompatActivity
             }
         }
         if (checkedNum == 0) {
-            Snackbar.make(smsVp, "请勾选要删除的短信", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(smsVp, "请勾选要删除的短信", Snackbar.LENGTH_SHORT)
+                    .show();
             return false;
         }
         int count = preSize - list.size();
         if (count > 0) {
-            Snackbar.make(smsVp, "成功删除" + count + "条", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(smsVp, "成功删除" + count + "条", Snackbar.LENGTH_SHORT)
+                    .show();
             return true;
         } else {
             String msg = "删除失败";
-            if (!Telephony.Sms.getDefaultSmsPackage(this).equals(getPackageName())) {
+            if (!Telephony.Sms.getDefaultSmsPackage(this)
+                              .equals(getPackageName())) {
                 msg = "该应用非默认短信应用，没有删除权限，请修改为默认";
             }
-            Snackbar.make(smsVp, msg, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(smsVp, msg, Snackbar.LENGTH_LONG)
+                    .show();
             return false;
         }
     }
@@ -316,7 +336,8 @@ public class SmsCleanActivity extends AppCompatActivity
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        Toast.makeText(this, "请开启SMS Cleaner的验证码自动识别服务", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "请开启SMS Cleaner的验证码自动识别服务", Toast.LENGTH_SHORT)
+             .show();
         return super.onOptionsItemSelected(item);
     }
 
@@ -337,10 +358,11 @@ public class SmsCleanActivity extends AppCompatActivity
                 return rvs[position];
             }
             RecyclerView rv = (RecyclerView) LayoutInflater.from(SmsCleanActivity.this)
-                    .inflate(R.layout.recycler_view, container, false);
+                                                           .inflate(R.layout.recycler_view,
+                                                                    container, false);
             rv.setLayoutManager(new LinearLayoutManager(SmsCleanActivity.this));
             rv.addItemDecoration(new DividerItemDecoration(SmsCleanActivity.this,
-                    DividerItemDecoration.VERTICAL));
+                                                           DividerItemDecoration.VERTICAL));
             rv.setAdapter(new SmsRvAdapter(SmsCleanActivity.this, smsLists.get(position)));
             rvs[position] = rv;
             container.addView(rv);
