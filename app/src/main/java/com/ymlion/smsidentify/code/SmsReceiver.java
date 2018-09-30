@@ -20,6 +20,7 @@ import static com.ymlion.smsidentify.util.SmsUtil.findCode;
 
 public class SmsReceiver extends BroadcastReceiver {
 
+    private static final int REGEX_TYPE = 4;
     private String codeResult;
     private volatile int flag = 0;
     private CountDownLatch mLatch;
@@ -44,9 +45,10 @@ public class SmsReceiver extends BroadcastReceiver {
     }
 
     private void findAndCopy(Context context, String msg) {
-        mLatch = new CountDownLatch(3);
+        mLatch = new CountDownLatch(REGEX_TYPE);
         find(msg, "验证码");
         find(msg, "随机码");
+        find(msg, "动态码");
         find(msg, "verification code");
         try {
             mLatch.await();
@@ -58,14 +60,14 @@ public class SmsReceiver extends BroadcastReceiver {
 
     private void find(String msg, String key) {
         executor.submit(() -> {
-            if (flag >= 3) {
+            if (flag >= REGEX_TYPE) {
                 mLatch.countDown();
                 return;
             }
             String code = findCode(msg, key);
             if (code != null) {
                 codeResult = code;
-                flag = 3;
+                flag = REGEX_TYPE;
             }
             mLatch.countDown();
         });
