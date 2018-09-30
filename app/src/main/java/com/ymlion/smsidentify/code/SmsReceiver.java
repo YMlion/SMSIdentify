@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import com.ymlion.smsidentify.model.SMSMessage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,7 +21,6 @@ import static com.ymlion.smsidentify.util.SmsUtil.findCode;
 
 public class SmsReceiver extends BroadcastReceiver {
 
-    private static final int REGEX_TYPE = 4;
     private String codeResult;
     private volatile int flag = 0;
     private CountDownLatch mLatch;
@@ -45,11 +45,10 @@ public class SmsReceiver extends BroadcastReceiver {
     }
 
     private void findAndCopy(Context context, String msg) {
-        mLatch = new CountDownLatch(REGEX_TYPE);
-        find(msg, "验证码");
-        find(msg, "随机码");
-        find(msg, "动态码");
-        find(msg, "verification code");
+        mLatch = new CountDownLatch(SMSMessage.CODE_KEYS.length);
+        for (String key : SMSMessage.CODE_KEYS) {
+            find(msg, key);
+        }
         try {
             mLatch.await();
         } catch (InterruptedException e) {
@@ -60,14 +59,14 @@ public class SmsReceiver extends BroadcastReceiver {
 
     private void find(String msg, String key) {
         executor.submit(() -> {
-            if (flag >= REGEX_TYPE) {
+            if (flag >= SMSMessage.CODE_KEYS.length) {
                 mLatch.countDown();
                 return;
             }
             String code = findCode(msg, key);
             if (code != null) {
                 codeResult = code;
-                flag = REGEX_TYPE;
+                flag = SMSMessage.CODE_KEYS.length;
             }
             mLatch.countDown();
         });

@@ -2,4 +2,9 @@
     <string name="app_name">SMS Cleaner</string>
     <string name="description">该服务用于保持在后台运行。\n打开之后，请授予该应用读取短信的权限。</string>
     <string name="code_verify">验证码识别</string>
+    <string name="open_sms_tip">请开启SMS Cleaner的验证码自动识别服务</string>
+    <string name="delete_failure">删除失败</string>
+    <string name="no_delete_permission">该应用非默认短信应用，没有删除权限，请修改为默认</string>
+    <string name="select_sms_to_delete">请勾选要删除的短信</string>
+    <string name="code_copy_success">验证码：%1$s已经复制到剪贴板</string>
 </resources>

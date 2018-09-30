@@ -171,7 +171,8 @@ public class SmsCleanActivity extends AppCompatActivity
 
     private void classifySms(SMSMessage sms) {
         if (sms.isReceived()) {
-            if (sms.body.contains("验证码")) {
+            int index = 0;
+            if (sms.body.contains(SMSMessage.CODE_KEYS[index++])) {
                 Log.i(TAG, "message : " + sms.toString());
                 smsLists.get(INDEX_CODE)
                         .add(sms);
@@ -179,11 +180,14 @@ public class SmsCleanActivity extends AppCompatActivity
                 Log.i(TAG, "message : " + sms.toString());
                 smsLists.get(INDEX_SUB)
                         .add(sms);
-            } else if (sms.body.contains("随机码")) {
+            } else if (sms.body.contains(SMSMessage.CODE_KEYS[index++])) {
                 Log.i(TAG, "message : " + sms.toString());
                 smsLists.get(INDEX_CODE)
                         .add(sms);
-            } else if (sms.body.contains("verification code")) {
+            } else if (sms.body.contains(SMSMessage.CODE_KEYS[index++])) {
+                Log.i(TAG, "message : " + sms.toString());
+                smsLists.get(INDEX_CODE).add(sms);
+            } else if (sms.body.contains(SMSMessage.CODE_KEYS[index])) {
                 Log.i(TAG, "message : " + sms.toString());
                 smsLists.get(INDEX_CODE)
                         .add(sms);
@@ -306,7 +310,7 @@ public class SmsCleanActivity extends AppCompatActivity
             }
         }
         if (checkedNum == 0) {
-            Snackbar.make(smsVp, "请勾选要删除的短信", Snackbar.LENGTH_SHORT)
+            Snackbar.make(smsVp, R.string.select_sms_to_delete, Snackbar.LENGTH_SHORT)
                     .show();
             return false;
         }
@@ -316,10 +320,10 @@ public class SmsCleanActivity extends AppCompatActivity
                     .show();
             return true;
         } else {
-            String msg = "删除失败";
+            int msg = R.string.delete_failure;
             if (!Telephony.Sms.getDefaultSmsPackage(this)
                               .equals(getPackageName())) {
-                msg = "该应用非默认短信应用，没有删除权限，请修改为默认";
+                msg = R.string.no_delete_permission;
             }
             Snackbar.make(smsVp, msg, Snackbar.LENGTH_LONG)
                     .show();
@@ -336,7 +340,7 @@ public class SmsCleanActivity extends AppCompatActivity
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        Toast.makeText(this, "请开启SMS Cleaner的验证码自动识别服务", Toast.LENGTH_SHORT)
+        Toast.makeText(this, R.string.open_sms_tip, Toast.LENGTH_SHORT)
              .show();
         return super.onOptionsItemSelected(item);
     }

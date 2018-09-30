@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.widget.Toast;
+import com.ymlion.smsidentify.R;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,7 +40,8 @@ public class SmsUtil {
             ClipData clip = ClipData.newPlainText("SMS", code);
             if (cm != null) {
                 cm.setPrimaryClip(clip);
-                Toast.makeText(context, "验证码：" + code + " 已经复制到剪贴板", Toast.LENGTH_LONG)
+                String tip = String.format(context.getString(R.string.code_copy_success), code);
+                Toast.makeText(context, tip, Toast.LENGTH_LONG)
                      .show();
             }
         }

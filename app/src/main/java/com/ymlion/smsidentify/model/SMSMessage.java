@@ -11,6 +11,11 @@ import java.util.Locale;
  */
 
 public class SMSMessage {
+
+    public static final String[] CODE_KEYS = {
+            "验证码", "随机码", "动态码", "verification code"
+    };
+
     public long id;
     public long date;
     public String address;
@@ -31,13 +36,27 @@ public class SMSMessage {
 
     @Override
     public String toString() {
-        return "SMSMessage{" + " id=" + id + ", date=" + formatDate(date) +
-                ", address='" + address + '\'' +
-                ", body='" + body + '\'' +
-                ", read='" + getMessageRead(read) + '\'' +
-                ", status='" + getMessageStatus(status) + '\'' +
-                ", type='" + getMessageType(type) + '\'' +
-                '}';
+        return "SMSMessage{"
+                + " id="
+                + id
+                + ", date="
+                + formatDate(date)
+                + ", address='"
+                + address
+                + '\''
+                + ", body='"
+                + body
+                + '\''
+                + ", read='"
+                + getMessageRead(read)
+                + '\''
+                + ", status='"
+                + getMessageStatus(status)
+                + '\''
+                + ", type='"
+                + getMessageType(type)
+                + '\''
+                + '}';
     }
 
     private String getMessageRead(int anInt) {
